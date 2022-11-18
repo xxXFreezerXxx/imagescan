@@ -65,6 +65,15 @@ const sendval = (name,value)=>{
   
 }
 
+const writestr=(num)=>{
+  const temp = num.toString();
+  return `${temp.length.toString().length}${temp.length}${temp}`;
+}
+const readstr=(str)=>{
+  
+}
+
+
 //controll cloud variables
 const process = (data)=>{
    const temp = scloudjs.parsedata(data,clouddatas);
