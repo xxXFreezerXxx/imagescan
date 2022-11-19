@@ -3,7 +3,8 @@ import Jimp from 'jimp';
 import fs from "fs";
 import scloudjs from "scloudjs";
 import https from "https";
-
+import dotenv from "dotenv";
+const secret =dotenv.config().parsed;
 //functions to get image
 const getimg = (link)=>{
     return new Promise((resolve,reject)=>{
@@ -35,7 +36,8 @@ const getimgcolour = (link)=>{
         await image.resize(20, Jimp.AUTO);
         let datas =[];
         for(let i=0;i<400;i++){
-          datas.push((image.getPixelColor(i%20,Math.floor(i/20))).toString());
+          const colour =Jimp.intToRGBA(image.getPixelColor(i%20,Math.floor(i/20))); 
+          datas.push((colour.r*65536+colour.g*256+colour.b).toString());
         }
         resolve(datas);
       });
@@ -51,9 +53,9 @@ const getimgcolour = (link)=>{
 let clouddatas = new Object();
 let time=0;
 let ran=0;
-const hostvals = ["HOST_1","HOST_2","HOST_3","HOST_4","HOST_4","HOST_5","HOST_6","HOST_7","HOST_8","HOST_9"];
+const hostvals = ["HOST_1","HOST_2","HOST_3","HOST_4","HOST_5","HOST_6","HOST_7","HOST_8"];
 const configvals = (vals)=>{
-  for(let i=0;i<9;i++){
+  for(let i=0;i<8;i++){
     if(vals[i]!=null){
       sendval(hostvals[i],vals[i]);
     }
@@ -84,6 +86,7 @@ return datas;
 
 //controll cloud variables
 const process = (data)=>{
+  console.log("got a message");
    const temp = scloudjs.parsedata(data,clouddatas);
    clouddatas = temp.clouddatas;
    const changedlists = temp.changedlists;
@@ -109,19 +112,19 @@ const process = (data)=>{
           }
           i=0;
           const sender =()=>{
-            let nine=[];
+            let eight=[];
             for(let ii=0;ii<9;ii++){
-              if(ii+i<=set.length){
-                nine.push(set[ii+i]);
+              if(ii+i<set.length){
+                eight.push(set[ii+i]);
               }else{
-                nine.push("0");
+                eight.push("0");
               }
             }
-            configvals(nine);
-            i+=9;
+            configvals(eight);
+            i+=8;
             if(i>set.length){
-              clearInterval(interval);
               setTimeout(() => {
+                clearInterval(interval);
                 sendval("HOST_1","0");
               }, 500);
             }
@@ -139,7 +142,7 @@ const process = (data)=>{
 
 };
 
-scloudjs.setdatas("xX_Freezer_Xx","","763589970",process);
+scloudjs.setdatas(secret.username,secret.password,secret.projectid,process);
 
 const func = async()=>{
 
