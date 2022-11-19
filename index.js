@@ -35,7 +35,7 @@ const getimgcolour = (link)=>{
         await image.resize(20, Jimp.AUTO);
         let datas =[];
         for(let i=0;i<400;i++){
-          datas.push(image.getPixelColor(i%20,Math.floor(i/20)));
+          datas.push((image.getPixelColor(i%20,Math.floor(i/20))).toString());
         }
         resolve(datas);
       });
@@ -66,11 +66,19 @@ const sendval = (name,value)=>{
 }
 
 const writestr=(num)=>{
-  const temp = num.toString();
+  const temp = num;
   return `${temp.length.toString().length}${temp.length}${temp}`;
 }
 const readstr=(str)=>{
-  
+  let i=0;
+  let datas=[];
+  while(i<str.length){
+      const digitofdigit = parseInt(str.charAt(i));
+      const digit=parseInt(str.substring(i+1,digitofdigit+i+1));
+      datas.push(str.substring(i+1+digitofdigit,i+1+digitofdigit+digit));
+      i+=1+digitofdigit+digit;
+  }
+return datas;
 }
 
 
@@ -79,7 +87,6 @@ const process = (data)=>{
    const temp = scloudjs.parsedata(data,clouddatas);
    clouddatas = temp.clouddatas;
    const changedlists = temp.changedlists;
-   console.log(changedlists);
    if(time==0){
     time=1;
    }else{
@@ -87,9 +94,45 @@ const process = (data)=>{
       const client = clouddatas.CLIENT.value;
       if(client.charAt(0)==0){
         ran=(ran+1)%10;
-        sendval("HOST_1",ran);
+        sendval("HOST_1",ran.toString());
       }else if(client.charAt(0)==1){
-        getimgcolour("https://uploads.scratch.mit.edu/get_image/user/83921919_60x60.png").then()
+        getimgcolour("https://uploads.scratch.mit.edu/get_image/user/83921919_60x60.png").then(res=>{
+          let str="";
+          for(let i=0;i<res.length;i++){
+            str=str+writestr(res[i]);
+          };
+          let set=[];
+          let i=0;
+          while(i<str.length){
+            set.push(str.substring(i,i+256));
+            i+=256;
+          }
+          i=0;
+          const sender =()=>{
+            let nine=[];
+            for(let ii=0;ii<9;ii++){
+              if(ii+i<=set.length){
+                nine.push(set[ii+i]);
+              }else{
+                nine.push("0");
+              }
+            }
+            configvals(nine);
+            i+=9;
+            if(i>set.length){
+              clearInterval(interval);
+              setTimeout(() => {
+                sendval("HOST_1","0");
+              }, 500);
+            }
+
+          }
+          sender();
+          const interval = setInterval(()=>{
+            sender();
+          },1000);
+
+        })
       }
     }
    }
