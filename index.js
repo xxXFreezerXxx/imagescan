@@ -4,6 +4,7 @@ import fs from "fs";
 import scloudjs from "scloudjs";
 import https from "https";
 import dotenv from "dotenv";
+import {fileTypeFromFile} from 'file-type';
 const secret =dotenv.config().parsed;
 //functions to get image
 const getimg = (link)=>{
@@ -32,6 +33,7 @@ const getimgcolour = (link)=>{
     getimg(link).then(res=>{
       fs.writeFile('img.png', res, async function (err) {
         if (err) throw err;
+        const filetype = await fileTypeFromFile('img.png');
         const image = await Jimp.read(`./img.png`);
         await image.resize(20, 20);
         let datas =[];
@@ -85,7 +87,7 @@ return datas;
 {
 let set=[];
 let i;
-const sender =(interval)=>{
+const sender =()=>{
   let eight=[];
   for(let ii=0;ii<9;ii++){
     if(ii+i<set.length){
@@ -96,17 +98,10 @@ const sender =(interval)=>{
   }
   configvals(eight);
   i+=8;
-  if(i>set.length){
-    setTimeout(() => {
-      clearInterval(interval);
-      sendval("HOST_1","0");
-    }, 500);
-  }
 
 }
 //controll cloud variables
 const process = (data)=>{
-  console.log("s");
    const temp = scloudjs.parsedata(data,clouddatas);
    clouddatas = temp.clouddatas;
    const changedlists = temp.changedlists;
@@ -131,8 +126,8 @@ const process = (data)=>{
             set.push(str.substring(i,i+256));
             i+=256;
           }
+          console.log(str.length);
           i=0;
-          ran=(ran+1)%10;
           const s = `${writestr(set.length.toString())}${writestr(Math.floor(Math.random()*100000).toString())}`;
           sendval("HOST_1",s);
 
