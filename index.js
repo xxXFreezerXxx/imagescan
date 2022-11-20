@@ -33,7 +33,7 @@ const getimgcolour = (link)=>{
       fs.writeFile('img.png', res, async function (err) {
         if (err) throw err;
         const image = await Jimp.read(`./img.png`);
-        await image.resize(20, Jimp.AUTO);
+        await image.resize(20, 20);
         let datas =[];
         for(let i=0;i<400;i++){
           const colour =Jimp.intToRGBA(image.getPixelColor(i%20,Math.floor(i/20))); 
@@ -82,11 +82,31 @@ const readstr=(str)=>{
   }
 return datas;
 }
+{
+let set=[];
+let i;
+const sender =(interval)=>{
+  let eight=[];
+  for(let ii=0;ii<9;ii++){
+    if(ii+i<set.length){
+      eight.push(set[ii+i]);
+    }else{
+      eight.push("0");
+    }
+  }
+  configvals(eight);
+  i+=8;
+  if(i>set.length){
+    setTimeout(() => {
+      clearInterval(interval);
+      sendval("HOST_1","0");
+    }, 500);
+  }
 
-
+}
 //controll cloud variables
 const process = (data)=>{
-  console.log("got a message");
+  console.log("s");
    const temp = scloudjs.parsedata(data,clouddatas);
    clouddatas = temp.clouddatas;
    const changedlists = temp.changedlists;
@@ -94,56 +114,44 @@ const process = (data)=>{
     time=1;
    }else{
     if(changedlists.indexOf("CLIENT")!=-1){
+      console.log(clouddatas.CLIENT.value);
       const client = clouddatas.CLIENT.value;
       if(client.charAt(0)==0){
         ran=(ran+1)%10;
         sendval("HOST_1",ran.toString());
       }else if(client.charAt(0)==1){
-        getimgcolour("https://uploads.scratch.mit.edu/get_image/user/83921919_60x60.png").then(res=>{
+        const id = client.substring(1);
+        getimgcolour(`https://uploads.scratch.mit.edu/get_image/user/${id}_60x60.png`).then(res=>{
           let str="";
           for(let i=0;i<res.length;i++){
             str=str+writestr(res[i]);
           };
-          let set=[];
-          let i=0;
+          i=0;
           while(i<str.length){
             set.push(str.substring(i,i+256));
             i+=256;
           }
           i=0;
-          const sender =()=>{
-            let eight=[];
-            for(let ii=0;ii<9;ii++){
-              if(ii+i<set.length){
-                eight.push(set[ii+i]);
-              }else{
-                eight.push("0");
-              }
-            }
-            configvals(eight);
-            i+=8;
-            if(i>set.length){
-              setTimeout(() => {
-                clearInterval(interval);
-                sendval("HOST_1","0");
-              }, 500);
-            }
-
-          }
-          sender();
-          const interval = setInterval(()=>{
-            sender();
-          },1000);
+          ran=(ran+1)%10;
+          const s = `${writestr(set.length.toString())}${writestr(Math.floor(Math.random()*100000).toString())}`;
+          sendval("HOST_1",s);
 
         })
+      }else if(client.charAt(0)=="4"){
+        sender();
+        if(i>set.length){
+          set=[];
+        }
       }
-    }
+
+
+      }
    }
 
 };
 
 scloudjs.setdatas(secret.username,secret.password,secret.projectid,process);
-
+}
 const func = async()=>{
 
     await scloudjs.login();
