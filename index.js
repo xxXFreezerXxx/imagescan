@@ -104,8 +104,11 @@ const sender =()=>{
       eight.push("0");
     }
   }
-  configvals(eight);
-  i+=8;
+  setInterval(() => {
+    configvals(eight);
+    i+=8;
+    
+  }, 200);
 
 }
 //controll cloud variables
