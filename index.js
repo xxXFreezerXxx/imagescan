@@ -4,7 +4,7 @@ import fs from "fs";
 import scloudjs from "scloudjs";
 import https from "https";
 import dotenv from "dotenv";
-import {fileTypeFromFile} from 'file-type';
+import sharp from 'sharp';
 const secret =dotenv.config().parsed;
 //functions to get image
 const getimg = (link)=>{
@@ -28,20 +28,28 @@ const getimg = (link)=>{
     })
 }
 
+
 const getimgcolour = (link)=>{
   return new Promise((resolve,reject)=>{
     getimg(link).then(res=>{
-      fs.writeFile('img.png', res, async function (err) {
+      fs.writeFile('img/img.png', res, async function (err) {
         if (err) throw err;
-        const filetype = await fileTypeFromFile('img.png');
-        const image = await Jimp.read(`./img.png`);
-        await image.resize(20, 20);
-        let datas =[];
-        for(let i=0;i<400;i++){
-          const colour =Jimp.intToRGBA(image.getPixelColor(i%20,Math.floor(i/20))); 
-          datas.push((colour.r*65536+colour.g*256+colour.b).toString());
-        }
-        resolve(datas);
+        const a =sharp("./img/img.png").png({ mozjpeg: true }).toFile("./img/convert.png")
+        .then(async res=>{
+        
+          const image = await Jimp.read(`./img/convert.png`);
+          await image.resize(20, 20);
+          let datas =[];
+          for(let i=0;i<400;i++){
+            const colour =Jimp.intToRGBA(image.getPixelColor(i%20,Math.floor(i/20))); 
+            datas.push((colour.r*65536+colour.g*256+colour.b).toString());
+          }
+          
+          resolve(datas);
+
+        })
+        .catch(res=>console.log(res));
+        sharp.cache({ files : 0 });
       });
       
     })
@@ -115,6 +123,7 @@ const process = (data)=>{
         ran=(ran+1)%10;
         sendval("HOST_1",ran.toString());
       }else if(client.charAt(0)==1){
+        set=[];
         const id = client.substring(1);
         getimgcolour(`https://uploads.scratch.mit.edu/get_image/user/${id}_60x60.png`).then(res=>{
           let str="";
@@ -126,7 +135,7 @@ const process = (data)=>{
             set.push(str.substring(i,i+256));
             i+=256;
           }
-          console.log(str.length);
+          console.log(set.length);
           i=0;
           const s = `${writestr(set.length.toString())}${writestr(Math.floor(Math.random()*100000).toString())}`;
           sendval("HOST_1",s);
