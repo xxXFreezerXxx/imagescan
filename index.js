@@ -104,11 +104,11 @@ const sender =()=>{
       eight.push("0");
     }
   }
-  setInterval(() => {
+  setTimeout(() => {
     configvals(eight);
     i+=8;
     
-  }, 200);
+  }, 500);
 
 }
 //controll cloud variables
@@ -135,10 +135,9 @@ const process = (data)=>{
           };
           i=0;
           while(i<str.length){
-            set.push(str.substring(i,i+256));
+            set.push(/*(i/256+1).toString()*/str.substring(i,i+256));
             i+=256;
           }
-          console.log(set.length);
           i=0;
           const s = `${writestr(set.length.toString())}${writestr(Math.floor(Math.random()*100000).toString())}`;
           sendval("HOST_1",s);
@@ -168,3 +167,4 @@ const func = async()=>{
     await scloudjs.handshake();
 };
 func();
+
