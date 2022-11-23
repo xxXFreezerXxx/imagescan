@@ -97,12 +97,15 @@ let set=[];
 let i;
 const sender =()=>{
   let eight=[];
-  for(let ii=0;ii<9;ii++){
+  for(let ii=0;ii<8;ii++){
     if(ii+i<set.length){
       eight.push(set[ii+i]);
     }else{
       eight.push("0");
     }
+  }
+  for(let ii=0;ii<8;ii++){
+    
   }
   setTimeout(() => {
     configvals(eight);
