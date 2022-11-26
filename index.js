@@ -6,6 +6,9 @@ import https from "https";
 import dotenv from "dotenv";
 import sharp from 'sharp';
 const secret =dotenv.config().parsed;
+const reqres = [[20,20],[20,15],[20,15]];
+const strings=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","_","-"];
+let reqtype;
 //functions to get image
 const getimg = (link)=>{
     return new Promise((resolve,reject)=>{
@@ -38,12 +41,16 @@ const getimgcolour = (link)=>{
         .then(async res=>{
         
           const image = await Jimp.read(`./img/convert.png`);
-          await image.resize(20, 20);
+          await image.resize(reqres[reqtype-1][0], reqres[reqtype-1][1]);
           let datas =[];
-          for(let i=0;i<400;i++){
-            const colour =Jimp.intToRGBA(image.getPixelColor(i%20,Math.floor(i/20))); 
+          for(let i=0;i<reqres[reqtype-1][0]*reqres[reqtype-1][1];i++){
+            const colour =Jimp.intToRGBA(image.getPixelColor(i%20,Math.floor(i/20)));
             datas.push((colour.r*65536+colour.g*256+colour.b).toString());
           }
+          let str="";
+          for(let i=0;i<datas.length;i++){
+            str=str+writeint(datas[i]);
+          };
           
           resolve(datas);
 
@@ -77,11 +84,11 @@ const sendval = (name,value)=>{
   
 }
 
-const writestr=(num)=>{
+const writeint=(num)=>{
   const temp = num;
   return `${temp.length.toString().length}${temp.length}${temp}`;
 }
-const readstr=(str)=>{
+const readint=(str)=>{
   let i=0;
   let datas=[];
   while(i<str.length){
@@ -92,6 +99,17 @@ const readstr=(str)=>{
   }
 return datas;
 }
+const readstr=(str)=>{
+  let ret="";
+  let i=0;
+  while(i<str.length-1){
+    const temp = str.charAt(i)+str.charAt(i+1);
+    const letter = strings[parseInt(temp)-11];
+    ret=ret+letter;
+    i+=2;
+  }
+  return ret;
+};
 {
 let set=[];
 let i;
@@ -103,9 +121,6 @@ const sender =()=>{
     }else{
       eight.push("0");
     }
-  }
-  for(let ii=0;ii<8;ii++){
-    
   }
   setTimeout(() => {
     configvals(eight);
@@ -125,27 +140,53 @@ const process = (data)=>{
     if(changedlists.indexOf("CLIENT")!=-1){
       console.log(clouddatas.CLIENT.value);
       const client = clouddatas.CLIENT.value;
+      if(client.charAt(0)!=4){
+        reqtype=client.charAt(0);
+      }
       if(client.charAt(0)==0){
-        ran=(ran+1)%10;
-        sendval("HOST_1",ran.toString());
-      }else if(client.charAt(0)==1){
+        sendval("HOST_1",Math.floor(Math.random()*100000).toString());
+      }else if(client.charAt(0)==1||client.charAt(0)==2||client.charAt(0)==3){
         set=[];
-        const id = client.substring(1);
-        getimgcolour(`https://uploads.scratch.mit.edu/get_image/user/${id}_60x60.png`).then(res=>{
-          let str="";
-          for(let i=0;i<res.length;i++){
-            str=str+writestr(res[i]);
-          };
-          i=0;
-          while(i<str.length){
-            set.push(/*(i/256+1).toString()*/str.substring(i,i+256));
-            i+=256;
+        let name = client.substring(1);
+        name=readstr(name);
+        const readylink = new Promise((resolve,reject)=>{
+          if(reqtype==1){
+            getimg(`https://api.scratch.mit.edu/users/${name}/`).then(res=>{
+              const result = JSON.parse(Buffer.from(res,"utf-8").toString()).id;
+              resolve(`https://uploads.scratch.mit.edu/get_image/user/${result}_60x60.png`);
+            }).catch(()=>{
+              reject();
+            });
+            
+          } else if(reqtype==2){
+            resolve(`https://uploads.scratch.mit.edu/get_image/project/${name}_144x108.png`);
+          } else if(reqtype==3){
+            resolve(`https://uploads.scratch.mit.edu/get_image/gallery/${name}_144x108.png`);
           }
-          i=0;
-          const s = `${writestr(set.length.toString())}${writestr(Math.floor(Math.random()*100000).toString())}`;
-          sendval("HOST_1",s);
+      }).then(res=>{
+          getimgcolour(res).then(res=>{
+            let str="";
+            for(let i=0;i<res.length;i++){
+              str=str+writeint(res[i]);
+            };
+            i=0;
+            while(i<str.length){
+              set.push(/*(i/256+1).toString()*/str.substring(i,i+256));
+              i+=256;
+            }
+            i=0;
+            const s = `${writeint(set.length.toString())}${writeint(Math.floor(Math.random()*100000).toString())}`;
+            sendval("HOST_1",s);
+  
+          }).catch(()=>{
+            let str=`2${Math.floor(Math.random()*100000).toString()}`;
+            sendval("HOST_1",str);
+          })
 
-        })
+        }).catch(()=>{
+          let str=`2${Math.floor(Math.random()*100000).toString()}`;
+          sendval("HOST_1",str);
+        });
       }else if(client.charAt(0)=="4"){
         sender();
         if(i>set.length){
