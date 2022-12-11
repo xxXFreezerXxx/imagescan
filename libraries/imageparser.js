@@ -12,8 +12,8 @@ const getimagedata = (link)=>{
         .then(async res=>{
         
           const image = await Jimp.read(`./img/convert.png`);
-          const width = (20/image.bitmap.height)*image.bitmap.width;
-          await image.resize(20,width);
+          const height = Math.round((20/image.bitmap.height)*image.bitmap.height);
+          await image.resize(20,height);
           let datas =[];
           for(let i=0;i<400;i++){
             const colour =Jimp.intToRGBA(image.getPixelColor(i%20,Math.floor(i/20)));
@@ -24,7 +24,7 @@ const getimagedata = (link)=>{
             str=str+encoder.writeint(datas[i]);
           };
           
-          resolve({datas:datas,width:width});
+          resolve({datas:datas,height:height});
 
         })
         .catch(res=>console.log(res));
