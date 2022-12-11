@@ -1,10 +1,12 @@
 CLIENT REQUEUST METHOD
-<URL:int><header/body>
+<address:int><header/body>
 
-URL summary
+address summary
 0 - ping
 1 - message that client received message when sending file from server hasn't completed
-2~ - custom url which developer can specify
+2~ - custom address which developer can specify
+
+
 
 SERVER RESPONSE METHOD
 <rand> = random number with 6 digits(without encoding)
@@ -17,7 +19,6 @@ If ok&&need to send file:
 
 If don't need to send something
 <rand><status code^>
-0 - <random number with 6 digits>
 
 STATUS CODE
 0 - rejected

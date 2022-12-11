@@ -2,52 +2,52 @@
 import scloudjs from "scloudjs";
 import dotenv from "dotenv";
 import * as encoder from "./libraries/encoder.js";
-import * as parse from "./libraries/imageparser.js";
-import request from "./libraries/request.js";
 const secret =dotenv.config().parsed;
 
 //tools to controll cloud variables
 let clouddatas = new Object();
 let time=0;
-const valnames = ["HOST_1","HOST_2","HOST_3","HOST_4","HOST_5","HOST_6","HOST_7","HOST_8"];
+const hostvals = ["HOST_1","HOST_2","HOST_3","HOST_4","HOST_5","HOST_6","HOST_7","HOST_8"];
 const configvals = (vals)=>{
   for(let i=0;i<8;i++){
     if(vals[i]!=null){
-      sendval(valnames[i],vals[i]);
+      sendval(i,vals[i]);
     }
   }
 };
-const sendval = (name,value)=>{
-  scloudjs.sendtocloud(name,value);
-  clouddatas[name].value =value;
+const sendval = (num,value)=>{
+  scloudjs.sendtocloud(hostvals[num],value);
+  clouddatas[hostvals[num]].value =value;
   
 };
-const sendreject=(code)=>{
-  if(code==undefined){
-    sendval("HOST_1",0)
-  }
+const sendonlystatus=(code)=>{
+  sendval(0,encoder.randomnumber()+code);
 }
 
 {
 //controll cloud variables
 const process = (data)=>{
-  console.log("Get");
    const temp = scloudjs.parsedata(data,clouddatas);
    clouddatas = temp.clouddatas;
    const changedlists = temp.changedlists;
    if(time==0){
     time=1;
    }else{
+    let templ;
     if(changedlists.indexOf("CLIENT")!=-1){
-      const client = clouddatas.CLIENT.value;
-      const reqtype=encoder.readint();
-      const reqbody = client.substring(1);
-      if(reqtype==0){
-        //ping
-        sendval("HOST_1",randomnumber());
+      let i=0;
+      templ = encoder.readint(clouddatas.CLIENT.value,i);
+      i=templ.i;
+      const reqaddress = templ.data;
+      templ = encoder.readint(clouddatas.CLIENT.value,i);
+      i=templ.i;
+      const reqbody = templ.data;
+      if(reqaddress==0){
+        sendonlystatus(1);
       };
-      if(reqtype==1){
-      };
+      if(reqaddress==1){
+
+      }
 
       }
    }
