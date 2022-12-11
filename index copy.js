@@ -8,6 +8,7 @@ const secret =dotenv.config().parsed;
 let clouddatas = new Object();
 let time=0;
 const hostvals = ["HOST_1","HOST_2","HOST_3","HOST_4","HOST_5","HOST_6","HOST_7","HOST_8"];
+encoder
 const configvals = (vals)=>{
   for(let i=0;i<8;i++){
     if(vals[i]!=null){
