@@ -1,0 +1,26 @@
+CLIENT REQUEUST METHOD
+<URL:int><header/body>
+
+URL summary
+0 - ping
+1 - message that client received message when sending file from server hasn't completed
+2~ - custom url which developer can specify
+
+SERVER RESPONSE METHOD
+<rand> = random number with 6 digits(without encoding)
+^ = without encoding
+defalut file sending system
+
+If ok&&need to send file:
+1st - <rand><status code^><file size><file name>
+2nd ~ send file data
+
+If don't need to send something
+<rand><status code^>
+0 - <random number with 6 digits>
+
+STATUS CODE
+0 - rejected
+1 - OK
+2 - Error
+*Status code will be sent WITHOUT encoding.
