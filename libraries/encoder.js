@@ -43,9 +43,9 @@ const createlist = (str,name)=>{
   let retlist = [];
   let fileinfo;
   if(name==undefined){
-    fileinfo=randomnumber()+writeint(arrlength)+"00";
+    fileinfo=randomnumber()+"1"+writeint(arrlength)+"00";
   }else{
-    fileinfo=randomnumber()+writeint(arrlength)+writestr(name);
+    fileinfo=randomnumber()+"1"+writeint(arrlength)+writestr(name);
   }
   retlist.push([fileinfo,null,null,null,null,null,null,null]);
   for(let i=0;i<arrlength;i++){

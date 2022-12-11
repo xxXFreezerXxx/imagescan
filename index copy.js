@@ -22,7 +22,11 @@ const sendval = (name,value)=>{
   clouddatas[name].value =value;
   
 };
-
+const sendreject=(code)=>{
+  if(code==undefined){
+    sendval("HOST_1",0)
+  }
+}
 
 {
 //controll cloud variables
@@ -36,11 +40,11 @@ const process = (data)=>{
    }else{
     if(changedlists.indexOf("CLIENT")!=-1){
       const client = clouddatas.CLIENT.value;
-      const reqtype=parseInt(client.charAt(0));
+      const reqtype=encoder.readint();
       const reqbody = client.substring(1);
       if(reqtype==0){
         //ping
-        sendval("HOST_1","2"+randomnumber());
+        sendval("HOST_1",randomnumber());
       };
       if(reqtype==1){
       };
