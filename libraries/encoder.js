@@ -1,5 +1,3 @@
-
-
 const strings=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","_","-"];
 const writeint=(num)=>{
     const temp = num;
@@ -78,4 +76,13 @@ const randomnumber = ()=>{
   return (Math.floor(Math.random()*900000)+100000).toString();
 };
 export {writeint,readint,writestr,readstr,createlist,randomnumber,amountofhostvalues};
-console.log(writestr("a"));
+
+/*
+import * as image from "./imageparser.js";
+image.getimagedata("https://avatars.githubusercontent.com/u/97340998?s=48&v=4").then(res=>{
+  let st="";
+  for(let i=0;i<res.datas.length;i++){
+    st +=writeint(res.datas[i]);
+  }
+  console.log(createlist(st));
+})*/
