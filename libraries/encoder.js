@@ -3,10 +3,9 @@
 const strings=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","_","-"];
 const writeint=(num)=>{
     const temp = num;
-    console.log(temp);
     return `${temp.length.toString().length}${temp.length}${temp}`;
 }
-let amount;
+let amount=8;
 const amountofhostvalues = (am)=>{
   amount=am;
 }
@@ -40,36 +39,43 @@ const writestr=(str)=>{
     }
     encoded=encoded+"00";
     return encoded;
-}
+};
 
 const createlist = (str,name)=>{
   const arrlength = Math.ceil(str.length/250);
-  let matarray = [];
-  for(let i=0;i<amount;i++){
-    matarray.push(null);
-  }
-  let retlist = Array(Math.ceil(arrlength/amount)+1).fill(matarray);
-  //このarrayは一つを変えると全てが変わるからArrayクラスに依存しない形のものに書き直す必要がある。
   let fileinfo;
   if(name==undefined){
     fileinfo=randomnumber()+"1"+writeint(arrlength.toString())+"00";
   }else{
     fileinfo=randomnumber()+"1"+writeint(arrlength.toString())+writestr(name);
   }
-  retlist[0][0]=fileinfo;
-  for(let i=0;i<Math.ceil(arrlength);i++){
-    const subst = str.substring(i*250,(i+1)*250);
-    if(subst != ""){
-      retlist[Math.floor(i/amount)+1][i%amount]=randomnumber()+subst;
-    }else {
-      retlist[Math.floor(i/amount)+1][i%amount]=null;
+  let ii=-250*amount;
+  let retlist = Array.from(new Array(Math.ceil(arrlength/amount)+1),() => {
+    let onelist =[];
+    if(ii==-250*amount){
+      onelist.push(fileinfo);
+      for(let i=0;i<amount-1;i++){
+        onelist.push(null);
+      }
+    }else{
+    for(let i=0;i<amount;i++){
+      const subst = str.substring(ii+i*250,ii+(i+1)*250);
+      if(subst != ""){
+        onelist.push(randomnumber()+subst);
+      }else {
+        onelist.push(null);
+      }
     }
-  }
+
+    }
+    ii+=250*amount;
+    
+    return onelist;
+  });
   return retlist;
 };
 const randomnumber = ()=>{
   return (Math.floor(Math.random()*900000)+100000).toString();
-}
-amountofhostvalues(8);
-console.log(createlist("19123456789"));
+};
 export {writeint,readint,writestr,readstr,createlist,randomnumber,amountofhostvalues};
+console.log(writestr("a"));

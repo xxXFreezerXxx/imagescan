@@ -7,7 +7,7 @@ const secret =dotenv.config().parsed;
 //tools to controll cloud variables
 let clouddatas = new Object();
 let time=0;
-const hostvals = ["HOST_1","HOST_2","HOST_3","HOST_4","HOST_5","HOST_6","HOST_7","HOST_8"];
+const hostvals = ["HOST1","HOST2","HOST3","HOST4","HOST5","HOST6","HOST7","HOST8"];
 encoder
 const configvals = (vals)=>{
   for(let i=0;i<8;i++){
@@ -23,10 +23,12 @@ const sendval = (num,value)=>{
 };
 const sendonlystatus=(code)=>{
   sendval(0,encoder.randomnumber()+code);
-}
+};
 
-{
 //controll cloud variables
+{
+let sql;
+let sqli=0;
 const process = (data)=>{
    const temp = scloudjs.parsedata(data,clouddatas);
    clouddatas = temp.clouddatas;
@@ -40,24 +42,28 @@ const process = (data)=>{
       templ = encoder.readint(clouddatas.CLIENT.value,i);
       i=templ.i;
       const reqaddress = templ.data;
-      templ = encoder.readint(clouddatas.CLIENT.value,i);
-      i=templ.i;
-      const reqbody = templ.data;
+      const reqbody = clouddatas.CLIENT.value.substring(i);
       if(reqaddress==0){
         sendonlystatus(1);
-      };
-      if(reqaddress==1){
-
+      }else if(reqaddress==1){
+        sqli++;
+        configvals(sql[sqli]);
+      }else if(reqaddress==2){
+        sql = encoder.createlist("1512345","test");
+        sqli=0;
+        configvals(sql[sqli]);
       }
+
 
       }
    }
 
 };
-
-scloudjs.setdatas(secret.username,secret.password,secret.projectid,process);
 }
-const func = async()=>{
+
+
+scloudjs.setdatas(secret.username,secret.password,secret.projectid,process);//Setup
+const func = async()=>{//Websocket connection
 
     await scloudjs.login();
     console.log("Logged in to scratch account");

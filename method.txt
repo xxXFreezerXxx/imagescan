@@ -15,7 +15,7 @@ defalut file sending system
 
 If ok&&need to send file:
 1st - <rand><status code^><file size><file name>
-2nd ~ send file data
+2nd ~ <rand>send file data(One cloud variable can store 250 digits of number.)
 
 If don't need to send something
 <rand><status code^>
