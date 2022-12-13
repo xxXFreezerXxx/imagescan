@@ -1,5 +1,5 @@
 CLIENT REQUEUST METHOD
-<address:int><header/body>
+<address:int><header/body(int or str)>
 
 address summary
 0 - ping
@@ -14,7 +14,7 @@ SERVER RESPONSE METHOD
 defalut file sending system
 
 If ok&&need to send file:
-1st - <rand><status code^><file size><file name>
+1st - <rand><status code^><file size:int><file name:str>
 2nd ~ <rand>send file data(One cloud variable can store 250 digits of number.)
 
 If don't need to send something
